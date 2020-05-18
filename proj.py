@@ -1,10 +1,8 @@
-
 # course: CS2300
 # section: 1
-# due date: 04/25/20
 # name: Sam Rossilli
 # email: srossill@uccs.edu
-# description: Checks to see if a point is within a subspace of basis vectors
+# description: Takes a set of points (from unit cube) and projects them onto an 'image plane' (tkinter canvas)
 
 import math
 import tkinter as tk
@@ -15,7 +13,7 @@ import numpy as np
 SCREEN_H = 720
 SCREEN_W = 1280
 
-F = 1
+F = 1 #Image plane distance (focal length)
 PROJ_MAT = [[F, 0, 0, 0],
             [0, F, 0, 0],
             [0, 0, 1, 0]]
@@ -25,8 +23,11 @@ class triangle:
     def __init__(self, vecA, vecB, vecC):
         self.vectors = [(vecA), (vecB), (vecC)]
 
-    # Function to draw a triangle using canvas
     def draw(self, canvas):
+            """Function to draw a triangle using canvas
+               Args:
+                        canvas: Tkinter canvas to draw lines on
+               """
         p1 = self.vectors[0]
         p2 = self.vectors[1]
         p3 = self.vectors[2]
@@ -40,10 +41,15 @@ class triangle:
         # L3
         canvas.create_line(p3[0], SCREEN_H - p3[1],
                            p1[0], SCREEN_H - p1[1], width=5, fill='#ffb37d')
-        return True
 
-    # Function to make a new projected trangle
+
     def project(self, matrix):
+               """Function to make a new projected trangle
+               Args:
+                        matrix: 4x4 Projection Matrix to Use
+               Returns:
+                       Triangle (with new projected points)
+               """
         vecs = []
         for vec in self.vectors:
             a = vec[0:3]
@@ -57,7 +63,6 @@ class triangle:
             vecs.append(list(v_proj))
         return triangle(vecs[0], vecs[1], vecs[2])
 
-    # Functions to make a new rotated trangle
     def rotate_z(self, fTheta):
         m = [[math.cos(fTheta), math.sin(fTheta), 0, 0],
              [-math.sin(fTheta), math.cos(fTheta), 0, 0],
@@ -103,17 +108,17 @@ class triangle:
         return triangle(vectors[0], vectors[1], vectors[2])
 
 
-# Class represents a hard-coded cube in 3D space
+# Class represents a hard-coded unit cube in 3D space
 class Box:
     def __init__(self):
         self.tris = [
-            # Front
+            # Front face
             (triangle([0.0, 0.0, 0.0], [
                 0.0, 1.0, 0.0], [1.0, 1.0, 0.0])),
             (triangle([0.0, 0.0, 0.0], [
                 1.0, 1.0, 0.0], [1.0, 0.0, 0.0])),
 
-            # Right
+            # Right face
             (triangle([1.0, 0.0, 0.0], [
                 1.0, 1.0, 0.0], [1.0, 1.0, 1.0])),
             (triangle([1.0, 0.0, 0.0], [
@@ -133,7 +138,7 @@ class Box:
                 0.0, 1.0, 1.0], [1.0, 1.0, 1.0])),
             (triangle([0.0, 1.0, 0.0], [
                 1.0, 1.0, 1.0], [1.0, 1.0, 0.0])),
-            # Bot
+            # Bottom face
             (triangle([1.0, 0.0, 1.0], [
                 0.0, 0.0, 1.0], [0.0, 0.0, 0.0])),
             (triangle([1.0, 0.0, 1.0], [
@@ -148,7 +153,7 @@ class Window(tk.Frame):
 
 
 def render_loop():
-    global th
+    global th #theta is the current roataion of the cube
 
     w.delete('all')
     for triangle in box.tris:
@@ -169,12 +174,9 @@ def render_loop():
 
 
 th = .1  # Global Theta for rotation
-
 root = tk.Tk()
 app = Window(root)
 w = tk.Canvas(root, width=SCREEN_W, height=SCREEN_H, bg='#000000')
-
 box = Box()
-
 render_loop()
 root.mainloop()
